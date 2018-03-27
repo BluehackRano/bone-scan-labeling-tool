@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="60" viewBox="0 0 56 60">
+    <g fill="none" fill-rule="evenodd">
+        <path fill="#CFCFCF" d="M18.645 31.664l6.26-1.562a.5.5 0 0 0 .232-.839l-4.697-4.696a.5.5 0 0 0-.839.232l-1.562 6.26a.5.5 0 0 0 .606.605z"/>
+        <path stroke="#CFCFCF" stroke-width="2" d="M22.204 23.505l3.994 3.995 11.283-11.283a1 1 0 0 0 0-1.414l-2.58-2.58a1 1 0 0 0-1.415 0L22.204 23.505z"/>
+        <text fill="#CFCFCF" font-family="AppleSDGothicNeo-Medium, Apple SD Gothic Neo" font-size="15" font-weight="400">
+            <tspan x="10" y="55">Brush</tspan>
+        </text>
+    </g>
+</svg>

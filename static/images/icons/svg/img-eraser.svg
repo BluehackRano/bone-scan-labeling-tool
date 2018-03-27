@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="60" viewBox="0 0 56 60">
+    <g fill="none" fill-rule="evenodd">
+        <g transform="translate(13 7)">
+            <rect width="24" height="2" x="3" y="23" fill="#CFCFCF" rx="1"/>
+            <path stroke="#CFCFCF" stroke-width="2" d="M17.475 5.954a1 1 0 0 0-1.414 0L5.43 16.585a1 1 0 0 0-.012 1.402L8.03 20.69a1 1 0 0 0 .723.306l8.859-.034a1 1 0 0 0 .703-.293l6.23-6.23a1 1 0 0 0 0-1.415l-7.07-7.07z"/>
+            <path fill="#CFCFCF" d="M11 11.327l8.605 8.605 5.466-5.733L16.639 6z"/>
+        </g>
+        <text fill="#CFCFCF" font-family="AppleSDGothicNeo-Medium, Apple SD Gothic Neo" font-size="15" font-weight="400">
+            <tspan x="9" y="55">Eraser</tspan>
+        </text>
+    </g>
+</svg>

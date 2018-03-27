@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="60" viewBox="0 0 56 60">
+    <g fill="#CFCFCF" fill-rule="evenodd">
+        <text font-family="AppleSDGothicNeo-Medium, Apple SD Gothic Neo" font-size="15" font-weight="400">
+            <tspan x="16" y="55">Pan</tspan>
+        </text>
+        <g transform="translate(16 10)">
+            <rect width="2" height="20" x="11" y="2" rx="1"/>
+            <path d="M11.95 2.828L9.12 5.657a1 1 0 0 1-1.414-1.414L11.243.707a1 1 0 0 1 1.414 0l3.535 3.536a1 1 0 0 1-1.414 1.414L11.95 2.828zM11.95 21.071L9.12 18.243a1 1 0 0 0-1.414 1.414l3.536 3.535a1 1 0 0 0 1.414 0l3.535-3.535a1 1 0 1 0-1.414-1.414L11.95 21.07zM2.828 11.95L5.657 9.12a1 1 0 0 0-1.414-1.414L.707 11.243a1 1 0 0 0 0 1.414l3.536 3.535a1 1 0 1 0 1.414-1.414L2.828 11.95zM21.071 11.95L18.243 9.12a1 1 0 0 1 1.414-1.414l3.535 3.536a1 1 0 0 1 0 1.414l-3.535 3.535a1 1 0 0 1-1.414-1.414l2.828-2.828z"/>
+            <rect width="2" height="20" x="11" y="2" rx="1" transform="rotate(90 12 12)"/>
+        </g>
+    </g>
+</svg>
