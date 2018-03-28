@@ -47,7 +47,7 @@
   cornerstoneWADOImageLoader.webWorkerManager.initialize(config)
 
   export default {
-    name: 'BoneScanLabel',
+    name: 'BoneScanLabeling',
     components: {
       Sidebar,
       ClipLoader
