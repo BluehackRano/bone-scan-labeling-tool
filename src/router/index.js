@@ -9,7 +9,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/labeling'
+      // redirect: '/labeling'
+      name: 'BoneScanLabeling',
+      component: BoneScanLabeling
     },
     {
       path: '/labeling',

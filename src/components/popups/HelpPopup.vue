@@ -43,7 +43,7 @@
         shortKeys: [
           {key: 'p', function: 'Pan'},
           {key: 'b', function: 'Brush'},
-          {key: 'e', function: 'Erase'},
+          {key: 'e', function: 'Eraser'},
           {key: 's', function: 'Save'},
           {key: 'z', function: 'Undo'},
           {key: '+', function: 'Zoom In'},

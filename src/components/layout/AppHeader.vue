@@ -18,7 +18,7 @@
       </div>
 
       <nav class="nav">
-        <div class="nav-left">
+        <div class="nav-left" @click="logoClicked">
           <img src="/static/images/logos/img-logo-vuno.svg">
         </div>
 
@@ -115,7 +115,8 @@
   .nav-left {
     img {
       margin-left: 14px;
-      pointer-events: none;
+      /*pointer-events: none;*/
+      cursor: pointer;
 
       -webkit-touch-callout: none;
       -webkit-user-select: none;
