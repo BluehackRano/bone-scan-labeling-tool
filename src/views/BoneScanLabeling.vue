@@ -548,9 +548,6 @@
         if (r === 128 && g === 128 && b === 128 && a === 255) {
           return true
         }
-
-
-
         if (r === 254 && g === 229 && b === 153 && a === 255) {
           return true
         }
@@ -623,98 +620,23 @@
           }
           ctx.putImageData(imageData, 0, 0)
 
-          croppedCanvasForSave.toBlob(function(blob){
-            var link = document.getElementById('saveButton')
-            link.download = file.name
+          var link = document.getElementById('saveButton')
+          link.download = file.name
 
-            link.href = URL.createObjectURL(blob);
-
-            var type
-            if (file.type === 'png') {
-              type = 'image/png'
-              link.href = croppedCanvasForSave.toDataURL(type, 1.0)
-            } else if (file.type === 'jpg') {
-              type = 'image/jpeg'
-              link.href = croppedCanvasForSave.toDataURL(type, 1.0)
-            } else if (file.type === 'nii') {
-              link.href = croppedCanvasForSave.toDataURL()
-            }
-            link.click()
-
-          },'image/png')
-
-
-
-//          var link = document.getElementById('saveButton')
-//          link.download = file.name
-//
-//
-//          var type
-//          if (file.type === 'png') {
-//            type = 'image/png'
-//            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
-//          } else if (file.type === 'jpg') {
-//            type = 'image/jpeg'
-//            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
-//          } else if (file.type === 'nii') {
-//            link.href = croppedCanvasForSave.toDataURL()
-//          }
-//          link.click()
-
-
-//          var croppedCanvas = this.cropCanvas(this.canvas.node, 0, 0, this.initialImageWidth, this.newImageHeight)
-//
-//          var imageData = croppedCanvas.toDataURL('image/png', 1.0)
-//          var img = new Image()
-//          img.onload = () => {
-//            var tc = document.createElement('canvas');
-//            tc.width = this.img.width
-//            tc.height = this.img.height
-//
-//            var tctx = tc.getContext('2d')
-//            tctx.imageSmoothingEnabled = false
-//            tctx.drawImage(img, 0, 0, tc.width, tc.height)
-//
-//            var link = document.getElementById('saveButton');
-//            link.download = file.name
-//
-//            var type
-//            if (file.type === 'png') {
-//              type = 'image/png'
-//              link.href = tc.toDataURL(type, 1.0)
-//            } else if (file.type === 'jpg') {
-//              type = 'image/jpeg'
-//              link.href = tc.toDataURL(type, 1.0)
-//            } else if (file.type === 'nii') {
-//              link.href = tc.toDataURL()
-//            }
-//
-//            link.click()
-//          }
-//          img.src = imageData
-
+          var type
+          if (file.type === 'png') {
+            type = 'image/png'
+            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+          } else if (file.type === 'jpg') {
+            type = 'image/jpeg'
+            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+          } else if (file.type === 'nii') {
+            link.href = croppedCanvasForSave.toDataURL()
+          }
+          link.click()
 
         }, 100)
       },
-//      doSaveAs () {
-//        var imageData = this.dicomCanvas.toDataURL()
-//
-//        var img = new Image()
-//        img.onload = () => {
-//          var tc = document.createElement('canvas');
-//          tc.width = this.initialImageWidth
-//          tc.height = this.newImageHeight
-//
-//          var tctx = tc.getContext('2d')
-//          tctx.drawImage(img, 0, 0, tc.width, tc.height)
-//
-//          var link = document.getElementById('saveButton');
-//          link.download = 'downloaded.png'
-//          link.href = tc.toDataURL()//'image/png')
-//          link.click()
-//        }
-//        img.src = imageData
-//      },
       drawAfterPan (deltaX, deltaY) {
         // we need to clear the canvas, otherwise we'll have a bunch of overlapping images
         this.canvas.context.clearRect(0,0, this.canvas.node.width, this.canvas.node.height);
