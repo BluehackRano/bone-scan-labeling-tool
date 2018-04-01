@@ -615,15 +615,14 @@
             if (r === 0 && g === 0 && b === 0) {
               continue
             }
-
-            console.log(r + ', ' + g + ', ' + b + ', ' + a)
+//            console.log(r + ', ' + g + ', ' + b + ', ' + a)
 
             if (!this.colorValidation(r, g, b, a)) {
               data[i + 3] = 0
             }
           }
           ctx.putImageData(imageData, 0, 0)
-          
+
           croppedCanvasForSave.toBlob(function(blob){
             var link = document.getElementById('saveButton')
             link.download = file.name
