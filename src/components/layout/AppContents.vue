@@ -62,7 +62,7 @@
           return
         }
         let keyCode = e.keyCode
-        console.log(keyCode)
+//        console.log(keyCode)
         if (keyCode === 80) { // p
           self.shortKeyPan()
         } else if (keyCode === 66) { // b
