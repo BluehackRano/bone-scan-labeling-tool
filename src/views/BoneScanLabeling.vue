@@ -244,12 +244,6 @@
         canvas.node = document.createElement('canvas');
         canvas.node.style.position = 'absolute'
 
-//        canvas.node.style.imageRendering = 'optimizeSpeed'
-//        canvas.node.style.imageRendering = '-moz-crisp-edges'
-//        canvas.node.style.imageRendering = '-webkit-optimize-contrast'
-//        canvas.node.style.imageRendering = 'optimize-contrast'
-//        canvas.node.style.imageRendering = 'pixelated'
-
         canvas.node.width = width;
         canvas.node.height = height;
         canvas.context = canvas.node.getContext('2d');
@@ -487,7 +481,6 @@
 
         var buffer = document.createElement('canvas');
         var b_ctx = buffer.getContext('2d');
-//        b_ctx.imageSmoothingEnabled = false
         buffer.width = width;
         buffer.height = height;
         b_ctx.drawImage(canvas, offsetX, offsetY, width, height,
@@ -495,135 +488,212 @@
 
         return buffer
       },
-      sharpen(ctx, w, h, mix) {
-        var x, sx, sy, r, g, b, a, dstOff, srcOff, wt, cx, cy, scy, scx,
-          weights = [0, -1, 0, -1, 5, -1, 0, -1, 0],
-          katet = Math.round(Math.sqrt(weights.length)),
-          half = (katet * 0.5) | 0,
-          dstData = ctx.createImageData(w, h),
-          dstBuff = dstData.data,
-          srcBuff = ctx.getImageData(0, 0, w, h).data,
-          y = h;
+      cropCanvasForSave (canvas, offsetX, offsetY, source_width, source_height) {
+        this.canvas.context.imageSmoothingEnabled = false
 
-        while (y--) {
-          x = w;
-          while (x--) {
-            sy = y;
-            sx = x;
-            dstOff = (y * w + x) * 4;
-            r = 0;
-            g = 0;
-            b = 0;
-            a = 0;
+        console.log('canvas: ' + canvas.width + 'x' +  canvas.height)
+        console.log('crop: ' + source_width + 'x' +  source_height)
+        console.log('origin: ' + this.img.width + 'x' +  this.img.height)
 
-            for (cy = 0; cy < katet; cy++) {
-              for (cx = 0; cx < katet; cx++) {
-                scy = sy + cy - half;
-                scx = sx + cx - half;
+        var buffer = document.createElement('canvas')
+        var b_ctx = buffer.getContext('2d')
+        b_ctx.imageSmoothingQuality = 'low'
+        buffer.width = this.img.width
+        buffer.height = this.img.height
+        b_ctx.drawImage(canvas, offsetX, offsetY, source_width, source_height,
+          0, 0, buffer.width, buffer.height)
 
-                if (scy >= 0 && scy < h && scx >= 0 && scx < w) {
-                  srcOff = (scy * w + scx) * 4;
-                  wt = weights[cy * katet + cx];
-
-                  r += srcBuff[srcOff] * wt;
-                  g += srcBuff[srcOff + 1] * wt;
-                  b += srcBuff[srcOff + 2] * wt;
-                  a += srcBuff[srcOff + 3] * wt;
-                }
-              }
-            }
-
-            dstBuff[dstOff] = r * mix + srcBuff[dstOff] * (1 - mix);
-            dstBuff[dstOff + 1] = g * mix + srcBuff[dstOff + 1] * (1 - mix);
-            dstBuff[dstOff + 2] = b * mix + srcBuff[dstOff + 2] * (1 - mix);
-            dstBuff[dstOff + 3] = srcBuff[dstOff + 3];
-          }
+        return buffer
+      },
+      colorValidation (r, g, b, a) {
+        if (r === 56 && g === 117 && b === 30 && a === 255) {
+          return true
+        }
+        if (r === 152 && g === 18 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 37 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 153 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 251 && b === 1 && a === 255) {
+          return true
+        }
+        if (r === 6 && g === 249 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 1 && g === 253 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 74 && g === 133 && b === 232 && a === 255) {
+          return true
+        }
+        if (r === 5 && g === 50 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 153 && g === 55 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 64 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 153 && g === 154 && b === 95 && a === 255) {
+          return true
+        }
+        if (r === 136 && g === 83 && b === 24 && a === 255) {
+          return true
+        }
+        if (r === 128 && g === 128 && b === 128 && a === 255) {
+          return true
         }
 
-        ctx.putImageData(dstData, 0, 0);
-      },
 
+
+        if (r === 254 && g === 229 && b === 153 && a === 255) {
+          return true
+        }
+        if (r === 139 && g === 205 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 0 && b === 100 && a === 255) {
+          return true
+        }
+        if (r === 189 && g === 255 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 29 && g === 103 && b === 157 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 152 && b === 191 && a === 255) {
+          return true
+        }
+        if (r === 112 && g === 0 && b === 106 && a === 255) {
+          return true
+        }
+        if (r === 0 && g === 209 && b === 88 && a === 255) {
+          return true
+        }
+        if (r === 213 && g === 166 && b === 189 && a === 255) {
+          return true
+        }
+        if (r === 154 && g === 151 && b === 255 && a === 255) {
+          return true
+        }
+        if (r === 219 && g === 95 && b === 0 && a === 255) {
+          return true
+        }
+        if (r === 223 && g === 0 && b === 102 && a === 255) {
+          return true
+        }
+        if (r === 115 && g === 26 && b === 71 && a === 255) {
+          return true
+        }
+        if (r === 255 && g === 255 && b === 255 && a === 255) {
+          return true
+        }
+        return false
+      },
       doSave (file) {
         this.doFit()
 
         setTimeout(() => {
+          var croppedCanvasForSave = this.cropCanvasForSave(this.canvas.node, 0, 0, this.initialImageWidth, this.newImageHeight)
 
-//          var link = document.getElementById('saveButton');
-//          link.download = file.name
-//          link.href = this.canvas.node.toDataURL('image/jpeg', 1.0)
-//          link.click()
+          var ctx = croppedCanvasForSave.getContext('2d')
+          var imageData = ctx.getImageData(0, 0, croppedCanvasForSave.width, croppedCanvasForSave.height)
+          var data = imageData.data
 
-//            this.canvas.node.toBlob(function(blob) {
-//              var link = document.getElementById('saveButton');
-//              link.download = file.name
-//              link.href = URL.createObjectURL(blob)
-//              link.click()
-//            }, 'image/jpeg', 1.0)
+          for (var i = 0; i < data.length; i += 4) {
 
+            var r = data[i]
+            var g = data[i + 1]
+            var b = data[i + 2]
+            var a = data[i + 3]
 
-          var croppedCanvas = this.cropCanvas(this.canvas.node, 0, 0, this.initialImageWidth, this.newImageHeight)
-          var imageData = croppedCanvas.toDataURL('image/png', 1.0)
-          var img = new Image()
-          img.onload = () => {
-            var tc = document.createElement('canvas');
-            tc.width = this.img.width
-            tc.height = this.img.height
+            if (r === 0 && g === 0 && b === 0) {
+              continue
+            }
 
-            var tctx = tc.getContext('2d')
-            tctx.imageSmoothingEnabled = false
-            tctx.drawImage(img, 0, 0, tc.width, tc.height)
+            console.log(r + ', ' + g + ', ' + b + ', ' + a)
 
-
-//            var imageData = tctx.getImageData(0, 0, tc.width, tc.height)
-//            var data = imageData.data
-//            for (var i = 0; i < data.length; i += 4) {
-//              if (data[i] === 0 && data[i+1] === 0 && data[i+2] === 0) {
-//                continue
-//              }
-//              console.log(data[i] + ', ' + data[i + 1] + ', ' + data[i + 2])
-//
-//              if (data[i + 1] < 32 || data[i + 1] > 40) {
-//                data[i] = 0
-//                data[i + 1] = 0
-//                data[i + 2] = 0
-//                data[i + 3] = 0
-//              } else {
-//                data[i + 1] = 37
-//              }
-
-//              var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-//              c     = avg; // red
-//              data[i + 1] = avg; // green
-//              data[i + 2] = avg; // blue
-//            }
-
-
-//            for (var i = 0; i < data.length; i += 4) {
-//              if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) {
-//                continue
-//              }
-//              console.log(data[i] + ', ' + data[i + 1] + ', ' + data[i + 2])
-//            }
-//            tctx.putImageData(imageData, 0, 0);
-
-
-            var link = document.getElementById('saveButton');
+            if (!this.colorValidation(r, g, b, a)) {
+              data[i + 3] = 0
+            }
+          }
+          ctx.putImageData(imageData, 0, 0)
+          
+          croppedCanvasForSave.toBlob(function(blob){
+            var link = document.getElementById('saveButton')
             link.download = file.name
+
+            link.href = URL.createObjectURL(blob);
 
             var type
             if (file.type === 'png') {
               type = 'image/png'
-              link.href = tc.toDataURL(type, 1.0)
+              link.href = croppedCanvasForSave.toDataURL(type, 1.0)
             } else if (file.type === 'jpg') {
               type = 'image/jpeg'
-              link.href = tc.toDataURL(type, 1.0)
+              link.href = croppedCanvasForSave.toDataURL(type, 1.0)
             } else if (file.type === 'nii') {
-              link.href = tc.toDataURL()
+              link.href = croppedCanvasForSave.toDataURL()
             }
-
             link.click()
-          }
-          img.src = imageData
+
+          },'image/png')
+
+
+
+//          var link = document.getElementById('saveButton')
+//          link.download = file.name
+//
+//
+//          var type
+//          if (file.type === 'png') {
+//            type = 'image/png'
+//            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+//          } else if (file.type === 'jpg') {
+//            type = 'image/jpeg'
+//            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+//          } else if (file.type === 'nii') {
+//            link.href = croppedCanvasForSave.toDataURL()
+//          }
+//          link.click()
+
+
+//          var croppedCanvas = this.cropCanvas(this.canvas.node, 0, 0, this.initialImageWidth, this.newImageHeight)
+//
+//          var imageData = croppedCanvas.toDataURL('image/png', 1.0)
+//          var img = new Image()
+//          img.onload = () => {
+//            var tc = document.createElement('canvas');
+//            tc.width = this.img.width
+//            tc.height = this.img.height
+//
+//            var tctx = tc.getContext('2d')
+//            tctx.imageSmoothingEnabled = false
+//            tctx.drawImage(img, 0, 0, tc.width, tc.height)
+//
+//            var link = document.getElementById('saveButton');
+//            link.download = file.name
+//
+//            var type
+//            if (file.type === 'png') {
+//              type = 'image/png'
+//              link.href = tc.toDataURL(type, 1.0)
+//            } else if (file.type === 'jpg') {
+//              type = 'image/jpeg'
+//              link.href = tc.toDataURL(type, 1.0)
+//            } else if (file.type === 'nii') {
+//              link.href = tc.toDataURL()
+//            }
+//
+//            link.click()
+//          }
+//          img.src = imageData
+
 
         }, 100)
       },
