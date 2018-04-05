@@ -47,7 +47,7 @@
   cornerstoneWADOImageLoader.webWorkerManager.initialize(config)
 
   export default {
-    name: 'BoneScanLabeling',
+    name: 'BoneScanLabelingRefac',
     components: {
       Sidebar,
       ClipLoader
@@ -65,6 +65,7 @@
         dicomCanvas: null,
         canvas: null,
         bgCanvas: null,
+        mousePointerCanvas: null,
         img: {},
         initialImageWidth: 0,
         newImageHeight: 0,
@@ -136,12 +137,14 @@
           this.newImageHeight = imgH * ratio
           this.initBgCanvas(container, containerW, containerH, this.img.object);
           this.initCanvas(container, containerW, containerH);
+          this.initMousePointerCanvas(container, containerW, containerH);
         } else {
           ratio = containerH / imgH
           this.initialImageWidth = imgW * ratio
           this.newImageHeight = containerH
           this.initBgCanvas(container, containerW, containerH, this.img.object);
           this.initCanvas(container, containerW, containerH);
+          this.initMousePointerCanvas(container, containerW, containerH);
         }
       },
 
@@ -203,7 +206,6 @@
           let imgH = image.rows
           let ratio
 
-          console.log(containerH/containerW + ' : ' + imgH/imgW)
           if (containerH/containerW >= imgH/imgW) {
             ratio = containerW / imgW
             this.initialImageWidth = containerW
@@ -231,6 +233,7 @@
         this.dicomCanvas = null
         this.canvas = null
         this.bgCanvas = null
+        this.mousePointerCanvas = null
         this.canvasPos.deltaX = 0
         this.canvasPos.deltaY = 0
         this.$store.commit(mutationType.SET_LABELING_MODE, {mode: 'Pan'})
@@ -272,9 +275,6 @@
         var canvas = this.createCanvas(container, width, height);
         this.canvas = canvas
 
-//        var hRatio = this.canvas.width  / bgImage.width;
-//        var vRatio =  this.canvas.height / bgImage.height;
-
         this.canvas.context.clearRect(0,0,this.canvas.width, this.canvas.height);
         // define a custom fillCircle method
         this.canvas.context.fillCircle = function(x, y, radius, fillColor) {
@@ -288,27 +288,37 @@
 
         this.addCanvasEvents(this.canvas, this.canvas.context);
       },
-//      drawCircle(x, y, radius, fillColor) {
-//        // Clear the background
-//        this.canvas.context.clearRect(0, 0, this.canvas.node.width, this.canvas.node.height)
-//
-//        for (let i=0; i<this.drawingPaths.length; i++) {
-//          let aPaths = this.drawingPaths[i]
-//          for (let j = 0; j < aPaths.length; j++) {
-//            let aPath = aPaths[j]
-//            this.canvas.context.globalCompositeOperation = aPath.globalCompositeOperation
-//            this.canvas.context.fillCircle(aPath.x * this.zoomRate, aPath.y * this.zoomRate, aPath.radius * this.zoomRate, aPath.fillColor)
-//          }
-//        }
-//
-//        // Establish the circle path
-//        this.canvas.context.beginPath();
-//        this.canvas.context.arc(x, y, radius, 0 , 2 * Math.PI, true)
-//
-//        // Fill the circle
-//        this.canvas.context.fillStyle = fillColor
-//        this.canvas.context.fill()
-//      },
+      initMousePointerCanvas (container, width, height) {
+        var canvas = this.createCanvas(container, width, height);
+        this.mousePointerCanvas = canvas
+        this.clearMousePointerCanvas()
+        this.mousePointerCanvas.node.style.pointerEvents = 'none'
+
+        this.mousePointerCanvas.context.fillCircle = function(x, y, radius, fillColor) {
+          this.imageSmoothingEnabled = false
+          this.fillStyle = fillColor;
+          this.beginPath();
+          this.moveTo(x, y);
+          this.arc(x, y, radius, 0, Math.PI * 2, false);
+          this.fill();
+        }
+      },
+      drawMousePointerCanvas (x, y, r, color) {
+        if (!this.mousePointerCanvas) {
+          return;
+        }
+        if (this.labelingMode.mode === 'Erase') {
+          color = '#ffffff'
+        }
+        this.clearMousePointerCanvas()
+        this.mousePointerCanvas.context.fillCircle(x, y, r, color)
+      },
+      clearMousePointerCanvas () {
+        if (!this.mousePointerCanvas) {
+          return;
+        }
+        this.mousePointerCanvas.context.clearRect(0, 0, this.mousePointerCanvas.node.width, this.mousePointerCanvas.node.height)
+      },
       addCanvasEvents (canvas, ctx) {
         let self = this
 
@@ -353,10 +363,6 @@
           }
 
           if (self.labelingMode.mode !== 'Pan') {
-            if (!canvas.isDrawing) {
-              return;
-            }
-
             var x = e.layerX - this.offsetLeft;
             var y = e.layerY - this.offsetTop;
 
@@ -369,6 +375,11 @@
               ctx.globalCompositeOperation = 'destination-out'
             }
             var fillColor = self.brush.color
+
+            if (!canvas.isDrawing) {
+              self.drawMousePointerCanvas(x, y, radius, fillColor)
+              return
+            }
 
             ctx.fillCircle(x, y, radius, fillColor);
 
@@ -396,6 +407,7 @@
           }
         };
         canvas.node.onmousedown = function(e) {
+          self.clearMousePointerCanvas()
           if (e.button === self.MOUSE_LEFT) {
             switch (self.labelingMode.mode) {
               case 'Draw':
@@ -424,6 +436,7 @@
           canvas.isDrawing = false;
           canvas.isPanning = false;
           self.isMouseRight = false
+          self.clearMousePointerCanvas()
 
           if (self.tempDrawingPaths && self.tempDrawingPaths.length > 0) {
             self.drawingPaths.push(self.tempDrawingPaths)
@@ -434,6 +447,7 @@
           canvas.isDrawing = false;
           canvas.isPanning = false;
           self.isMouseRight = false
+          self.clearMousePointerCanvas()
 
           if (self.tempDrawingPaths && self.tempDrawingPaths.length > 0) {
             self.drawingPaths.push(self.tempDrawingPaths)
@@ -442,9 +456,10 @@
         }
 
         canvas.node.onwheel = function (e) {
+          self.clearMousePointerCanvas()
+
           var delta = 0;
           var r = canvas.node.getBoundingClientRect();
-
 
           if (e.wheelDelta) {
             delta = e.wheelDelta / 120;
@@ -466,6 +481,7 @@
       },
       menuClicked (menu) {
         console.log(menu)
+        this.clearMousePointerCanvas()
         switch (menu) {
           case 'Pan':
             this.canvas.node.style.cursor = 'move'
@@ -493,9 +509,6 @@
         }
       },
       cropCanvas (canvas, offsetX, offsetY, width, height) {
-//        console.log(width + ' x ' + height)
-//        console.log(this.img.width + ' x ' + this.img.height)
-
         var buffer = document.createElement('canvas');
         var b_ctx = buffer.getContext('2d');
         buffer.width = width;
@@ -505,137 +518,112 @@
 
         return buffer
       },
-      cropCanvasForSave (canvas, offsetX, offsetY, source_width, source_height) {
-        this.canvas.context.imageSmoothingEnabled = false
+      createCanvasForSave () {
+        var canvasForSave = document.createElement('canvas')
+        var ctx = canvasForSave.getContext('2d')
+        ctx.imageSmoothingEnabled = false
+        ctx.imageSmoothingQuality = 'low'
+        canvasForSave.width = this.img.width
+        canvasForSave.height = this.img.height
 
-        console.log('canvas: ' + canvas.width + 'x' +  canvas.height)
-        console.log('crop: ' + source_width + 'x' +  source_height)
-        console.log('origin: ' + this.img.width + 'x' +  this.img.height)
-
-        var buffer = document.createElement('canvas')
-        var b_ctx = buffer.getContext('2d')
-        b_ctx.imageSmoothingQuality = 'low'
-        buffer.width = this.img.width
-        buffer.height = this.img.height
-        b_ctx.drawImage(canvas, offsetX, offsetY, source_width, source_height,
-          0, 0, buffer.width, buffer.height)
-
-        return buffer
+        return canvasForSave
       },
-      colorValidation (r, g, b, a) {
-        if (r === 56 && g === 117 && b === 30 && a === 255) {
-          return true
+      drawCircleCanvasForSave () {
+        var canvas = this.createCanvasForSave()
+
+        var ratio = this.img.width / this.initialImageWidth
+        var ctx = canvas.getContext('2d')
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        for (let i=0; i<this.drawingPaths.length; i++) {
+          let aPaths = this.drawingPaths[i]
+          for (let j = 0; j < aPaths.length; j++) {
+            let aPath = aPaths[j]
+            let r = Math.round(ratio * aPath.radius)
+            let aRGBA = this.getRGBA(aPath.fillColor)
+            if (aPath.globalCompositeOperation === 'source-over') { // Brush mode
+              if (r !== 0) {
+                this.drawCircle(imageData, Math.round(ratio * aPath.x), Math.round(ratio * aPath.y), Math.round(ratio * aPath.radius), aRGBA)
+              } else {
+                this.setPixel(imageData, Math.round(ratio * aPath.x), Math.round(ratio * aPath.y), aRGBA.r, aRGBA.g, aRGBA.b, aRGBA.a)
+              }
+            } else if (aPath.globalCompositeOperation === 'destination-out') { // Eraser mode
+              if (r !== 0) {
+                this.drawCircle(imageData, Math.round(ratio * aPath.x), Math.round(ratio * aPath.y), Math.round(ratio * aPath.radius), {r: 255, g: 255, b: 255, a: 0})
+              } else {
+                this.setPixel(imageData, Math.round(ratio * aPath.x), Math.round(ratio * aPath.y), 255, 255, 255, 0)
+              }
+            }
+          }
         }
-        if (r === 152 && g === 18 && b === 0 && a === 255) {
-          return true
+        ctx.putImageData(imageData, 0, 0)
+
+        return canvas
+      },
+      drawCircle (imageData, xc, yc, r, rgba) {
+        if (r < 1) return;
+
+        let self = this
+
+        var x = r, y = 0,  // for Bresenham's mid-point circle algorithm
+          cd = 0,
+          xoff = 0,
+          yoff = r,
+          b = -r,
+          p0, p1, w0, w1;
+
+        while (xoff <= yoff) {
+          p0 = xc - xoff;
+          p1 = xc - yoff;
+          w0 = xoff + xoff;
+          w1 = yoff + yoff;
+
+          fill(imageData, p0, yc - yoff, yc + yoff, w0)
+          fill(imageData, p1, yc - xoff, yc + xoff, w1)
+
+          if ((b += xoff+++xoff) >= 0) {
+            b -= --yoff + yoff;
+          }
         }
-        if (r === 255 && g === 37 && b === 0 && a === 255) {
-          return true
+
+        // for fill
+        function fill(imageData, x, y1, y2, w) {
+          w++;
+          var xw = 0;
+          while (w--) {
+            xw = x + w;
+            drawPixel(imageData, xw, y1);
+            drawPixel(imageData, xw, y2);
+          }
         }
-        if (r === 255 && g === 153 && b === 0 && a === 255) {
-          return true
+
+        function drawPixel(imageData, x, y) {
+          if (x < imageData.width && y < imageData.height && x >= 0 && y >= 0) {
+            self.setPixel(imageData, x, y, rgba.r, rgba.g, rgba.b, rgba.a)
+          }
         }
-        if (r === 255 && g === 251 && b === 1 && a === 255) {
-          return true
-        }
-        if (r === 6 && g === 249 && b === 0 && a === 255) {
-          return true
-        }
-        if (r === 1 && g === 253 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 74 && g === 133 && b === 232 && a === 255) {
-          return true
-        }
-        if (r === 5 && g === 50 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 153 && g === 55 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 255 && g === 64 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 153 && g === 154 && b === 95 && a === 255) {
-          return true
-        }
-        if (r === 136 && g === 83 && b === 24 && a === 255) {
-          return true
-        }
-        if (r === 128 && g === 128 && b === 128 && a === 255) {
-          return true
-        }
-        if (r === 254 && g === 229 && b === 153 && a === 255) {
-          return true
-        }
-        if (r === 139 && g === 205 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 255 && g === 0 && b === 100 && a === 255) {
-          return true
-        }
-        if (r === 189 && g === 255 && b === 0 && a === 255) {
-          return true
-        }
-        if (r === 29 && g === 103 && b === 157 && a === 255) {
-          return true
-        }
-        if (r === 255 && g === 152 && b === 191 && a === 255) {
-          return true
-        }
-        if (r === 112 && g === 0 && b === 106 && a === 255) {
-          return true
-        }
-        if (r === 0 && g === 209 && b === 88 && a === 255) {
-          return true
-        }
-        if (r === 213 && g === 166 && b === 189 && a === 255) {
-          return true
-        }
-        if (r === 154 && g === 151 && b === 255 && a === 255) {
-          return true
-        }
-        if (r === 219 && g === 95 && b === 0 && a === 255) {
-          return true
-        }
-        if (r === 223 && g === 0 && b === 102 && a === 255) {
-          return true
-        }
-        if (r === 115 && g === 26 && b === 71 && a === 255) {
-          return true
-        }
-        if (r === 255 && g === 255 && b === 255 && a === 255) {
-          return true
-        }
-        return false
+      },
+      setPixel (imageData, x, y, r, g, b, a) {
+        let index = (x + y * imageData.width) * 4
+        imageData.data[index+0] = r
+        imageData.data[index+1] = g
+        imageData.data[index+2] = b
+        imageData.data[index+3] = a
+      },
+      getRGBA (str){
+        var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3}), ?(\d{1,3})?/);
+        return match ? {
+          r: parseInt(match[1]),
+          g: parseInt(match[2]),
+          b: parseInt(match[3]),
+          a: parseInt(match[4])
+        } : {}
       },
       doSave (file) {
         this.doFit()
 
         setTimeout(() => {
-          var croppedCanvasForSave = this.cropCanvasForSave(this.canvas.node, 0, 0, this.initialImageWidth, this.newImageHeight)
-
-          var ctx = croppedCanvasForSave.getContext('2d')
-          var imageData = ctx.getImageData(0, 0, croppedCanvasForSave.width, croppedCanvasForSave.height)
-          var data = imageData.data
-
-          for (var i = 0; i < data.length; i += 4) {
-
-            var r = data[i]
-            var g = data[i + 1]
-            var b = data[i + 2]
-            var a = data[i + 3]
-
-            if (r === 0 && g === 0 && b === 0) {
-              continue
-            }
-//            console.log(r + ', ' + g + ', ' + b + ', ' + a)
-
-            if (!this.colorValidation(r, g, b, a)) {
-              data[i + 3] = 0
-            }
-          }
-          ctx.putImageData(imageData, 0, 0)
+          var canvasForSave = this.drawCircleCanvasForSave()
 
           var link = document.getElementById('saveButton')
           link.download = file.name
@@ -643,12 +631,12 @@
           var type
           if (file.type === 'png') {
             type = 'image/png'
-            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+            link.href = canvasForSave.toDataURL(type, 1.0)
           } else if (file.type === 'jpg') {
             type = 'image/jpeg'
-            link.href = croppedCanvasForSave.toDataURL(type, 1.0)
+            link.href = canvasForSave.toDataURL(type, 1.0)
           } else if (file.type === 'nii') {
-            link.href = croppedCanvasForSave.toDataURL()
+            link.href = canvasForSave.toDataURL()
           }
           link.click()
 
@@ -656,8 +644,9 @@
       },
       drawAfterPan (deltaX, deltaY) {
         // we need to clear the canvas, otherwise we'll have a bunch of overlapping images
-        this.canvas.context.clearRect(0,0, this.canvas.node.width, this.canvas.node.height);
-        this.bgCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height);
+        this.canvas.context.clearRect(0,0, this.canvas.node.width, this.canvas.node.height)
+        this.bgCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height)
+        this.mousePointerCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height)
 
         // these will be our new x,y position to move the image.
         this.bgCanvas.context.drawImage(this.img.object,  deltaX, deltaY, this.initialImageWidth, this.newImageHeight);
@@ -688,10 +677,10 @@
       doZoomOut (canvasZoomX, canvasZoomY) {
         this.zoomLevel--
 
-        if (this.zoomLevel < 1) {
-          this.zoomLevel = 1
-          return
-        }
+//        if (this.zoomLevel < 1) {
+//          this.zoomLevel = 1
+//          return
+//        }
 
         // ZOOMING OUT
         var zoomedX = (this.canvasPos.deltaX + canvasZoomX) / 2;
@@ -708,8 +697,9 @@
         this.newImageHeight = this.img.height / this.img.width * this.initialImageWidth;
 
         // we need to clear the canvas, otherwise we'll have a bunch of overlapping images
-        this.canvas.context.clearRect(0,0, this.canvas.node.width, this.canvas.node.height);
-        this.bgCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height);
+        this.canvas.context.clearRect(0,0, this.canvas.node.width, this.canvas.node.height)
+        this.bgCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height)
+        this.mousePointerCanvas.context.clearRect(0,0, this.bgCanvas.node.width, this.bgCanvas.node.height)
 
         // these will be our new x,y position to move the image.
         this.bgCanvas.context.drawImage(this.img.object, zoomedX, zoomedY, this.initialImageWidth, this.newImageHeight);
@@ -728,7 +718,11 @@
       },
       doFit () {
         while (this.zoomLevel != 1) {
-          this.doZoomOut(this.canvas.node.width/2, this.canvas.node.height/2)
+          if (this.zoomLevel > 1) {
+            this.doZoomOut(this.canvas.node.width/2, this.canvas.node.height/2)
+          } else if (this.zoomLevel < 1) {
+            this.doZoomIn(this.canvas.node.width/2, this.canvas.node.height/2)
+          }
         }
         this.canvasPos.deltaX = 0
         this.canvasPos.deltaY = 0

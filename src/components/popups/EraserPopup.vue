@@ -4,8 +4,8 @@
     :parent="true"
     :resizable="false"
     :x="0" :y="320" :z="2000"
-    :w="344" :h="186"
-    :minw="344" :minh="186">
+    :w="242" :h="186"
+    :minw="242" :minh="186">
     <div class="eraser-popup-inner">
       <div class="eraser-header">
         <span>Eraser</span>
@@ -127,19 +127,19 @@
 
         div.eraser-body-inner {
           margin-top: 21px;
-          margin-left: 28px;
-          width: 285px;
+          margin-left: 12px;
+          width: 220px;
           height: 98px;
 
           a {
             display: inline-block;
-            width: 92px;
+            width: 70px;
             height: 98px;
             border-radius: 5px;
             background-color: #333236;
 
             img {
-              margin: 12px 11px;
+              margin-top: 12px;
             }
 
             &:hover {

@@ -35,12 +35,12 @@
               @click="typeClicked(TYPE_JPG)">
               <span>{{TYPE_JPG}}</span>
             </a>
-            <a
-              :class="{ active: saveType === TYPE_NII }"
-              @click="typeClicked(TYPE_NII)"
-              class="disabled">
-              <span>{{TYPE_NII}}</span>
-            </a>
+            <!--<a-->
+              <!--:class="{ active: saveType === TYPE_NII }"-->
+              <!--@click="typeClicked(TYPE_NII)"-->
+              <!--class="disabled">-->
+              <!--<span>{{TYPE_NII}}</span>-->
+            <!--</a>-->
           </div>
 
           <div class="file-save-button-area">
@@ -265,14 +265,14 @@
 
             a {
               display: inline-block;
-              width: 94px;
+              width: 143.5px;
               height: 58px;
               border-radius: 4px;
               background-color: #333236;
 
               span {
                 position: absolute;
-                margin-left: 34px;
+                margin-left: 60px;
                 margin-top: 21px;
                 width: 24px;
                 height: 18px;

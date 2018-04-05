@@ -20,7 +20,7 @@ const state = {
   },
   brush: {
     radius: 7,
-    color: '#38751e'
+    color: 'rgba(56,117,30,255)'
   },
   eraser: {
     radius: 15
