@@ -416,6 +416,37 @@
                 canvas.isPanning = false;
 
                 self.tempDrawingPaths = []
+
+
+
+                var x = e.layerX - this.offsetLeft;
+                var y = e.layerY - this.offsetTop;
+
+                var radius
+                if (self.labelingMode.mode === 'Draw') {
+                  radius = self.brush.radius * self.zoomRate;
+                  ctx.globalCompositeOperation = 'source-over'
+                } else if (self.labelingMode.mode === 'Erase') {
+                  radius = self.eraser.radius * self.zoomRate;
+                  ctx.globalCompositeOperation = 'destination-out'
+                }
+                var fillColor = self.brush.color
+
+                if (!canvas.isDrawing) {
+                  self.drawMousePointerCanvas(x, y, radius, fillColor)
+                  return
+                }
+
+                ctx.fillCircle(x, y, radius, fillColor);
+
+                self.tempDrawingPaths.push({
+                  x: (x - self.canvasPos.deltaX) / self.zoomRate,
+                  y: (y - self.canvasPos.deltaY) / self.zoomRate,
+                  radius: radius / self.zoomRate,
+                  fillColor: fillColor,
+                  globalCompositeOperation: ctx.globalCompositeOperation
+                })
+
                 break
               case 'Pan':
                 var r = canvas.node.getBoundingClientRect();
