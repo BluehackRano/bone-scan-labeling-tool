@@ -205,7 +205,11 @@
       }
 
       img {
-        margin: 9px 10px;
+        width: 56px;
+        height: 60px;
+        margin-left: 10px;
+        margin-top: 9px;
+        object-fit: contain;
       }
     }
     a:first-child {
