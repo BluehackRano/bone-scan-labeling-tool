@@ -14,7 +14,7 @@
             <a v-for="(submenu, subindex) in menu.children"
                :class="{ active: submenu.name === labelingMode.mode }"
                @click="menuClicked(submenu)">
-              <img v-if="submenu.meta.icon" :src="`/static/images/icons/svg/${submenu.meta.icon}`">
+              <img v-if="submenu.meta.icon" :src="`/static/images/icons/png/${submenu.meta.icon}`">
             </a>
           </div>
         </template>
@@ -175,7 +175,11 @@
       }
 
       img {
-        margin: 9px 42.5px;
+        width: 30px;
+        height: 30px;
+        margin-left: 42.5px;
+        margin-top: 9px;
+        object-fit: contain;
       }
     }
     a:first-child {

@@ -26,7 +26,7 @@ const state = {
           type: 'action',
           meta: {
             label: 'Save',
-            icon: 'img-01-save.svg'
+            icon: 'img-01-save.png'
           }
         },
         {
@@ -34,7 +34,7 @@ const state = {
           type: 'action',
           meta: {
             label: 'Undo',
-            icon: 'img-02-undo.svg'
+            icon: 'img-02-undo.png'
           }
         }
       ]
@@ -50,7 +50,7 @@ const state = {
           type: 'select',
           meta: {
             label: 'Pan',
-            icon: 'img-pan.svg'
+            icon: 'img-pan.png'
           }
         },
         {
@@ -58,7 +58,7 @@ const state = {
           type: 'select',
           meta: {
             label: 'Brush',
-            icon: 'img-brush.svg'
+            icon: 'img-brush.png'
           }
         },
         {
@@ -66,7 +66,7 @@ const state = {
           type: 'select',
           meta: {
             label: 'Erase',
-            icon: 'img-eraser.svg'
+            icon: 'img-eraser.png'
           }
         }
       ]
@@ -82,7 +82,7 @@ const state = {
           type: 'action',
           meta: {
             label: 'Zoom In',
-            icon: 'img-zoomin.svg'
+            icon: 'img-zoomin.png'
           }
         },
         {
@@ -90,7 +90,7 @@ const state = {
           type: 'action',
           meta: {
             label: 'Zoom Out',
-            icon: 'img-zoomout.svg'
+            icon: 'img-zoomout.png'
           }
         },
         {
@@ -98,7 +98,7 @@ const state = {
           type: 'action',
           meta: {
             label: 'OneOnOne',
-            icon: 'img-one-2-one.svg'
+            icon: 'img-one-2-one.png'
           }
         }
       ]
